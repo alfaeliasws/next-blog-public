@@ -18,11 +18,11 @@ export default function NavIndex({ className }){
             </div>
 
             <div className="absolute md:hidden w-full top-12 right-8 flex justify-end">
-                    <img src="/menu.svg" className="h-[25px]" onClick={() => setOffCanvas(true)}/>
+                    <img alt="Menu" src="/menu.svg" className="h-[25px]" onClick={() => setOffCanvas(true)}/>
             </div>
 
             <div className={classNames("fixed text-xl bg-main-200 z-10 top-0 h-full w-full md:hidden transition-all", offCanvas ? "right-0" : "-right-full")}>
-                <img src="/x.svg" className="absolute top-10 right-10 bg-transparent" onClick={() => setOffCanvas(false)} />
+                <img alt="close" src="/x.svg" className="absolute top-10 right-10 bg-transparent" onClick={() => setOffCanvas(false)} />
                 <div onClick={() => setOffCanvas(false)}>
                     <Nav className="flex-col text-white space-y-8 justify-center pt-24"/>
                 </div>

@@ -18,15 +18,31 @@ export function BulletedList({children, className}){
 
 export function ContentParagraph({children, className}){
     return (
-        <p className={classNames("text-md font-extralight text-white tracking-widest w-full leading-9",className)}>
+        <p className={classNames("md:text-lg font-regular text-white tracking-widest w-full md:leading-10 leading-9 ",className)}>
             {children}
         </p>
     )
 }
 
+export function ContentWithLink({children, className}){
+    return (
+        <p className={classNames("md:text-lg font-regular text-white tracking-widest md:leading-10 leading-9 ",className)}>
+            {children}
+        </p>
+    )
+}
+
+export function Title({children, className}){
+    return (
+        <p className={classNames("text-4xl font-semibold text-white tracking-widest",className)}>
+            {children}
+        </p>
+     )
+}
+
 export function ContentH1({children, className}){
     return (
-        <p className={classNames("text-2xl font-semibold text-white tracking-widest",className)}>
+        <p className={classNames("text-3xl font-semibold text-white tracking-widest",className)}>
             {children}
         </p>
      )
