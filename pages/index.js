@@ -6,14 +6,14 @@ import { getPages } from "../pages/api/GetPropsId";
 import Footer from '../components/Footer';
 import { useState } from 'react';
 
-export default function Home({mappedDatabase}) {
+export default function Home({finalDatabase}) {
   const [data, setData] = useState('');
 
   function childToParent(childData){
     setData(childData)
   }
 
-  const filteredDatabase = mappedDatabase.filter((page) => {
+  const filteredDatabase = finalDatabase.filter((page) => {
     return page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())
   })
 
@@ -73,6 +73,7 @@ export async function getStaticProps() {
       console.log(err.message)
   })
 
-  return {props:  {mappedDatabase}
+  const finalDatabase = JSON.parse(JSON.stringify(mappedDatabase))
+  return {props:  {finalDatabase}
 }
 }

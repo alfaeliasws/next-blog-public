@@ -66,8 +66,8 @@ export default function BlogPage({mappedContents, displayedPage, mappedDatabase}
     </div>
 )}
 
-export async function getServerSideProps() {
-    const slug = "Blog-With-Notion-&-NextJS"
+export async function getServerSideProps(context) {
+    const slug = context.params.slug
 
     const database = await getPages()
     const dateId = process.env.NEXT_PUBLIC_NOTION_DATE
