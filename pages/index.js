@@ -4,7 +4,7 @@ import Search from '../components/Search'
 import { getProperties } from "../pages/api/GetAllStaticProps";
 import { getPages } from "../pages/api/GetPropsId";
 import Footer from '../components/Footer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Home({finalDatabase}) {
   const [data, setData] = useState('');
@@ -15,6 +15,10 @@ export default function Home({finalDatabase}) {
 
   const filteredDatabase = finalDatabase.filter((page) => {
     return page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())
+  })
+
+  useEffect(() => {
+    document.title = "Alfaelias' Blog"
   })
 
   return (

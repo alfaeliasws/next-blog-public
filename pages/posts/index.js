@@ -2,12 +2,16 @@ import ContentCard from '../../components/ContentCard'
 import { getProperties } from "../../pages/api/GetAllStaticProps";
 import { getPages } from "../../pages/api/GetPropsId";
 import Footer from '../../components/Footer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NavPages from '../../components/NavPages';
 import Search from '../../components/Search';
 
 export default function Home({mappedDatabase}) {
   const [data, setData] = useState('');
+
+  useEffect(() => {
+    document.title = `Posts - Alfaelias' Blog`
+  })
 
   function childToParent(childData){
     setData(childData)
