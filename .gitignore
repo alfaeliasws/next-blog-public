@@ -33,3 +33,5 @@ yarn-error.log*
 .vercel
 
 /pages/Check.js
+/pages/login.js
+/pages/register.js

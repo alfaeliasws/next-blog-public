@@ -10,31 +10,33 @@ import Paragraph, { BulletedList, ContentH1, ContentH2, ContentH3, ContentParagr
 import Search from "../../components/Search";
 import Link from "next/link";
 
-export default function BlogPage({mappedContents, displayedPage, mappedDatabase}){
+export default function BlogPage({details}){
     const [data, setData] = useState('');
 
     useEffect(() => {
-        document.title = `${displayedPage.title} - Alfaelias' Blog`
+        document.title = `${details.displayedPage.title} - Alfaelias' Blog`
     })
 
     function childToParent(childData){
         setData(childData)
     }
 
-    const filteredDatabase = mappedDatabase.filter((page) => {
-        return page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())
+    const slug = details.slug
+
+    const filteredDatabase = details.results.filter((page) => {
+        return page.slugz.toLowerCase() !== slug.toLowerCase() && (page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())) 
     })
 
     const newMap = []
 
-    mappedContents.map(blocks => {
+    details.mappedContents.map(blocks => {
             if(blocks.type === "paragraph" && typeof blocks.content === "string") {return newMap.push(<ContentParagraph className="mb-7">{blocks.content}</ContentParagraph>)}
             if(blocks.type === "paragraph" && typeof blocks.content === "object") {
                 return newMap.push(
-                <ContentWithLink class="w-full">
+                <ContentWithLink className="w-full">
                     {blocks.content.map(p => {
                         if(typeof p === "string") {return <span>{p}</span>}
-                        if(typeof p === "object") {return <span><Link href={p.href}><a className="opacity-50">{p.content}</a></Link></span>}
+                        if(typeof p === "object") {return <span><Link href={p.href}><a className="opacity-50 underline transition-all hover:text-green-200 hover:opacity-70">{p.content}</a></Link></span>}
                     })
                     }
                 </ContentWithLink>
@@ -52,16 +54,16 @@ export default function BlogPage({mappedContents, displayedPage, mappedDatabase}
         <NavPages childToParent={childToParent}/>
         <Search childToParent={childToParent} className2="h-[45px] w-[250px] lg:w-[300px] xl:invisible w-full mx-auto my-10 xl:hidden" />
         { data === '' ? 
-        <content className="flex mx-12 sm:mx-40 my-10 sm:px-5 py-5 min-h-screen flex-wrap">
-            <Title className="uppercase mb-12 sm:text-left text-center w-full">{displayedPage.title}</Title>
+        <main className="flex mx-12 sm:mx-40 my-10 sm:px-5 py-5 min-h-screen flex-wrap">
+            <Title className="uppercase mb-12 sm:text-left text-center w-full">{details.displayedPage.title}</Title>
             {newMap}
-        </content> : filteredDatabase.length !== 0 ? <div></div> : <div className="min-h-screen flex text-white text-4xl justify-center items-center tracking-widest uppercase w-full">Not Found ...</div>
+        </main> : filteredDatabase.length !== 0 ? <div></div> : <div className="min-h-screen flex text-white text-4xl justify-center items-center tracking-widest uppercase w-full">Not Found ...</div>
         }
         <div className="mt-20 flex flex-wrap justify-center w-full">
             {filteredDatabase.map(page =>
             {
                 return (
-                    <ContentCard imgSrc={page.cover} key={page.pageId} title={page.title} headline={page.desc} slug={page.slugz}/>
+                    <ContentCard imgSrc={page.cover} title={page.title} headline={page.desc} slug={page.slugz}/>
                 )
             }
             ).slice(0,3)}
@@ -80,61 +82,90 @@ export async function getServerSideProps(context) {
     const descId = process.env.NEXT_PUBLIC_NOTION_DESC
     const slugzId = process.env.NEXT_PUBLIC_NOTION_SLUGZ
 
-    async function newFunction(page){
+    async function pageData(page){
         const pageId = page.properties.pageId
-        const date = await getProperties(pageId, dateId)
-        const title = await getProperties(pageId, titleId)
-        const cover = await getProperties (pageId, coverId)
-        const desc = await getProperties (pageId, descId)
-        const slugz = await getProperties(pageId,slugzId)
-        return{
-            title: title.results[0].title.text.content ,
-            pageId,
-            date: date.date.start,
-            cover: cover.url,
-            desc: desc.results[0].rich_text.text.content,
-            slugz: slugz.formula.string
-        }
+
+        const data = {}
+
+        const date = getProperties(pageId, dateId)
+        const title = getProperties(pageId, titleId)
+        const cover = getProperties (pageId, coverId)
+        const desc = getProperties (pageId, descId)
+        const slugz = getProperties(pageId,slugzId)
+
+        const results = await Promise.all([date, title, cover, desc, slugz])
+        results.forEach((item) => {
+            if (item.type === "date") {
+                return data[item.type] = item.date.start
+            } 
+            if (item.results && item["property_item"].type === "title") {
+                return data["title"] = item.results[0].title.text.content
+            }
+            if (item.type  === "url") {
+                return data["cover"] = item.url
+            }
+            if (item.results && item["property_item"].type === "rich_text") {
+                return data["desc"] = item.results[0].rich_text.text.content
+            }
+            if (item.type === "formula") {
+                return data["slugz"] = item.formula.string
+            }
+        })
+
+        return{...data,pageId}
     }
 
-    const database2 = database.map(page => newFunction(page))
+    const database2 = database.map(page => pageData(page))
 
-    const details = await Promise.all(database2).then(
-        async(result) => {
-            const mappedDatabase = [...result]
-            const displayedPage = mappedDatabase.filter((page) => {
-                return page.slugz.toLowerCase() === slug.toLowerCase()
-            })
-            const getAPage = async() => {
-                const result = await notion.blocks.children.list({ block_id: `${displayedPage[0].pageId}`})
-                return result
-            }
+    const results = await Promise.all(database2)
 
-            const page = await getAPage()
-            const mappedContents = page.results
+    // const resultsKeyword = results.map((data) =>
+    //     {
+    //         const slugKeyword = data.slugz.toLowerCase().split("-")
+    //         const descKeyword = data.desc.toLowerCase().split(" ")
+    //         const keyword = slugKeyword.concat(descKeyword)
+    //     }
+    // )
+
+    const displayedPage = await Promise.all(results.filter((page) => {
+        return page.slugz.toLowerCase() === slug.toLowerCase()
+    }))
+
+    // console.log(displayedPage)
+
+    const getAPage = async() => {
+        const result = await notion.blocks.children.list({ block_id: `${displayedPage[0].pageId}`})
+        return result
+    }
+
+    const pageContent = await getAPage()
+
+    const mappedContents = pageContent.results
             .filter((page) => {
                 return page.type !== "callout" && page.type !== "toggle" &&  page.type !== "code" && page.type !== "child_database" && page.type !== "embed"
             })
             .map((page) => {
                 const check = page.paragraph?.rich_text
-                const content = ((check?.length < 2 || !page.paragraph) ? page.paragraph?.rich_text[0].plain_text : check?.map(p =>
-                {
-                    if(p.href === null) return p.plain_text
-                    if(p.href !== null) return {href: p.href, content: p.plain_text}
-                })) || page.heading_1?.rich_text[0].plain_text || page.heading_2?.rich_text[0].plain_text || page.heading_3?.rich_text[0].plain_text || page.bulleted_list_item?.rich_text[0].plain_text || page.quote?.rich_text[0].plain_text || page.image?.external.url
+                const content = 
+                    (check === [] && "" )
+                    || ((check?.length == 1 || !page.paragraph) ? page.paragraph?.rich_text[0].plain_text : check?.map(p =>
+                    {
+                        if(p.href === null) return p.plain_text
+                        if(p.href !== null) return {href: p.href, content: p.plain_text}
+                    }))
+                    || page.heading_1?.rich_text[0].plain_text
+                    || page.heading_2?.rich_text[0].plain_text
+                    || page.heading_3?.rich_text[0].plain_text
+                    || page.bulleted_list_item?.rich_text[0].plain_text
+                    || page.quote?.rich_text[0].plain_text
+                    || page.image?.external.url
                 return {
                     type: page.type,
                     content: content,
                     check: page.paragraph ? page.paragraph : ""
                 }
             })
-            return {mappedContents, mappedDatabase, displayedPage}
-        }
-    )
 
-     return {props:  {mappedDatabase: details.mappedDatabase,
-        displayedPage: details.displayedPage[0],
-        mappedContents: details.mappedContents
-    }
+    return {props:  {details: {mappedContents, results, displayedPage: displayedPage[0], slug}}
     }
 }

@@ -4,21 +4,17 @@ import Search from '../components/Search'
 import { getProperties } from "../pages/api/GetAllStaticProps";
 import { getPages } from "../pages/api/GetPropsId";
 import Footer from '../components/Footer';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-export default function Home({finalDatabase}) {
+export default function Home({mappedDatabase}) {
   const [data, setData] = useState('');
 
   function childToParent(childData){
     setData(childData)
   }
 
-  const filteredDatabase = finalDatabase.filter((page) => {
+  const filteredDatabase = mappedDatabase.filter((page) => {
     return page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())
-  })
-
-  useEffect(() => {
-    document.title = "Alfaelias' Blog"
   })
 
   return (
@@ -36,7 +32,7 @@ export default function Home({finalDatabase}) {
             filteredDatabase.map(page =>
             {
                 return (
-                    <ContentCard imgSrc={page.cover} key={page.pageId} title={page.title} headline={page.desc} slug={page.slugz}/>
+                    <ContentCard imgSrc={page.cover} title={page.title} headline={page.desc} slug={page.slugz}/>
                 )
             }
             ).slice(0,15) :
@@ -77,7 +73,6 @@ export async function getStaticProps() {
       console.log(err.message)
   })
 
-  const finalDatabase = JSON.parse(JSON.stringify(mappedDatabase))
-  return {props:  {finalDatabase}
+  return {props:  {mappedDatabase}
 }
 }

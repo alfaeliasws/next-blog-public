@@ -2,17 +2,13 @@ import ContentCard from '../components/ContentCard'
 import { getProperties } from "./api/GetAllStaticProps";
 import { getPages } from "./api/GetPropsId";
 import Footer from '../components/Footer';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import NavPages from '../components/NavPages';
 import AboutContent from '../components/AboutContent';
 import Search from '../components/Search';
 
 export default function About({mappedDatabase}) {
     const [data, setData] = useState('');
-
-    useEffect(() => {
-        document.title = `About - Alfaelias' Blog`
-    })
 
     function childToParent(childData){
     setData(childData)
@@ -37,7 +33,7 @@ export default function About({mappedDatabase}) {
             {filteredDatabase.map(page =>
             {
                 return (
-                    <ContentCard imgSrc={page.cover} key={page.pageId} title={page.title} headline={page.desc} slug={page.slugz}/>
+                    <ContentCard imgSrc={page.cover} title={page.title} headline={page.desc} slug={page.slugz}/>
                 )
             }
             ).slice(0,3)}

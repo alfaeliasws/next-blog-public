@@ -1,8 +1,15 @@
 import classNames from "classnames"
 
 export default function Paragraph({children, className}){
+    let addClass = ""
+
+    if(className.includes("card-title")){
+        if(children.length < 20) className = className + `, ${"hover:tracking-quite"}`
+        if(children.length >= 20) className = className + `, ${"hover:tracking-widest"}`
+    }
+
     return (
-        <p className={classNames("text-sm font-regular text-white",className)}>
+        <p className={classNames(`text-sm font-regular text-white`,className)}>
             {children}
         </p>
     )

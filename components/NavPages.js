@@ -20,11 +20,11 @@ export default function NavPages({childToParent, className}){
             </div>
 
             <div className="absolute md:hidden w-full top-12 right-8 flex justify-end">
-                    <img alt="Menu" src="/menu.svg" className="h-[25px]" onClick={() => setOffCanvas(true)}/>
+                    <img src="/menu.svg" alt="" className="h-[25px]" onClick={() => setOffCanvas(true)}/>
             </div>
 
             <div className={classNames("fixed text-xl bg-main-200 z-10 top-0 h-full w-full md:hidden transition-all", offCanvas ? "right-0" : "-right-full")}>
-                <img alt="Close" src="/x.svg" className="absolute top-10 right-10 bg-transparent" onClick={() => setOffCanvas(false)} />
+                <img src="/x.svg" alt="" className="absolute top-10 right-10 bg-transparent" onClick={() => setOffCanvas(false)} />
                 <div onClick={() => setOffCanvas(false)}>
                     <Nav className="flex-col text-white space-y-8 justify-center pt-24"/>
                 </div>
