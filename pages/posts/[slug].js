@@ -21,10 +21,8 @@ export default function BlogPage({details}){
         setData(childData)
     }
 
-    const slug = details.slug
-
-    const filteredDatabase = details.results.filter((page) => {
-        return page.slugz.toLowerCase() !== slug.toLowerCase() && (page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())) 
+    const filteredDatabase = details.mappedDatabase.filter((page) => {
+        return page.title.toLowerCase().includes(data.toLowerCase()) || page.desc.toLowerCase().includes(data.toLowerCase())
     })
 
     const newMap = []
@@ -33,10 +31,10 @@ export default function BlogPage({details}){
             if(blocks.type === "paragraph" && typeof blocks.content === "string") {return newMap.push(<ContentParagraph className="mb-7">{blocks.content}</ContentParagraph>)}
             if(blocks.type === "paragraph" && typeof blocks.content === "object") {
                 return newMap.push(
-                <ContentWithLink className="w-full">
+                <ContentWithLink class="w-full">
                     {blocks.content.map(p => {
                         if(typeof p === "string") {return <span>{p}</span>}
-                        if(typeof p === "object") {return <span><Link href={p.href}><a className="opacity-50 underline transition-all hover:text-green-200 hover:opacity-70">{p.content}</a></Link></span>}
+                        if(typeof p === "object") {return <span><Link href={p.href}><a className="opacity-50">{p.content}</a></Link></span>}
                     })
                     }
                 </ContentWithLink>
@@ -147,7 +145,7 @@ export async function getServerSideProps(context) {
             .map((page) => {
                 const check = page.paragraph?.rich_text
                 const content = 
-                    (check === [] && "" )
+                    (check.toString() === "[]" || "" )
                     || ((check?.length == 1 || !page.paragraph) ? page.paragraph?.rich_text[0].plain_text : check?.map(p =>
                     {
                         if(p.href === null) return p.plain_text

@@ -102,3 +102,22 @@ html {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
     }
+
+.fade-fast{
+    opacity: 0;
+    transition: all 1s;
+}
+
+.fade-medium{
+    opacity: 0;
+    transition: all 2s;
+}
+
+.fade-slow{
+    opacity: 0;
+    transition: all 3s;
+}
+
+.show{
+    opacity:1;
+}

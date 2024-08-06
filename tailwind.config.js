@@ -25,6 +25,8 @@ module.exports = {
       },
       colors:{
         main:{
+          "light-1":"#4d4c4c",
+          "light":"#363535",
           "50":"#201F1F",
           "100":"#181717",
           "200":"#1B1919",
@@ -44,9 +46,14 @@ module.exports = {
       const utilities = {
         ".shadow-skill":{
           "box-shadow": "0px 10px 30px rgba(0, 0, 0, 1)"
-        }
+        },
+        ".shadow-new":{
+          "box-shadow": "0px 10px 20px rgba(0, 0, 0, 1)"
+        },
+        ".shadow-newest":{
+          "box-shadow": "0px 5px 10px rgba(0, 0, 0, 1)"
+        },
       }
-
       addUtilities(utilities);
     }),
     require('tailwind-scrollbar')

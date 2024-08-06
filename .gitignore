@@ -4,7 +4,6 @@
 /node_modules
 /.pnp
 .pnp.js
-.env.local
 
 # testing
 /coverage
@@ -33,5 +32,9 @@ yarn-error.log*
 .vercel
 
 /pages/Check.js
+<<<<<<< HEAD
+/pages/posts/[id].js
+=======
 /pages/login.js
 /pages/register.js
+>>>>>>> fd239cf77f7da754c563a8a9705772d8bdd0eebd
